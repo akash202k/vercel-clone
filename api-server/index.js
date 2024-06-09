@@ -1,5 +1,9 @@
 import express from "express"
 import { ECSClient, RunTaskCommand } from "@aws-sdk/client-ecs";
+import dotenv from "dotenv";
+import { generateSlug } from "random-word-slugs";
+
+dotenv.config();
 
 const config = {
     region: process.env.AWS_REGION,
@@ -17,12 +21,16 @@ const app = express();
 
 
 app.post('/project', async (req, res) => {
-    const projectSlug = req.body?.projectSlug;
+    const PROJECT_SLUG = req.body?.projectSlug;
+
+    if (!PROJECT_SLUG) {
+        PROJECT_SLUG = generateSlug(2);
+    }
 
     const input = { // RunTaskRequest
 
-        cluster: "build-server",
-        taskDefinition: "build-task",
+        cluster: "builder-cluster",
+        taskDefinition: "builder-task",
         launchType: "FARGATE",
         count: 1,
         networkConfiguration: {
@@ -59,6 +67,10 @@ app.post('/project', async (req, res) => {
                             name: "GIT_REPO_URL",
                             value: process.env.GIT_REPO_URL
                         },
+                        {
+                            name: "PROJECT_SLUG",
+                            value: PROJECT_SLUG
+                        }
                     ]
                 }
             ]
@@ -66,9 +78,14 @@ app.post('/project', async (req, res) => {
 
 
     }
-    const command = new RunTaskCommand(input);
-    await ecsClient.send(command);
-    return res.json({ status: 'queued', data: { projectSlug, url: `http://${projectSlug}.localhost:8000` } })
+    try {
+        const command = new RunTaskCommand(input);
+        await ecsClient.send(command);
+        return res.json({ status: 'queued', data: { PROJECT_SLUG, url: `http://${PROJECT_SLUG}.localhost:8000` } });
+    } catch (error) {
+        console.error('Error running task:', error);
+        return res.status(500).json({ error: 'Failed to queue the project' });
+    }
 })
 
 

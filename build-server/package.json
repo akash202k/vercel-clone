@@ -7,11 +7,14 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.588.0",
     "@types/express": "^4.17.21",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "mime": "^4.0.3",
     "mime-types": "^2.1.35",
     "path": "^0.12.7",
-    "random-word-slugs": "^0.1.7"
+    "random-word-slugs": "^0.1.7",
+    "redis": "^4.6.14",
+    "ws": "^8.17.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
