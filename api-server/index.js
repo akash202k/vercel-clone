@@ -15,7 +15,7 @@ const config = {
 
 const ecsClient = new ECSClient(config);
 
-const port = 8000
+const port = 9000
 
 const app = express();
 
