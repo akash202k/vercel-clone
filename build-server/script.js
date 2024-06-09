@@ -15,7 +15,11 @@ const publisher = createClient({
 })
 
 const PublishLogsToRedis = async (channel, message) => {
-    publisher.publish(channel, message);
+    if (!publisher.isOpen) {
+        await publisher.connect();
+        console.log("Publisher connected to Redis");
+    }
+    await publisher.publish(channel, message);
 
 }
 

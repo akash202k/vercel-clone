@@ -21,7 +21,7 @@ const app = express();
 
 
 app.post('/project', async (req, res) => {
-    const PROJECT_SLUG = req.body?.projectSlug;
+    let PROJECT_SLUG = req.body?.projectSlug;
 
     if (!PROJECT_SLUG) {
         PROJECT_SLUG = generateSlug(2);
@@ -70,6 +70,10 @@ app.post('/project', async (req, res) => {
                         {
                             name: "PROJECT_SLUG",
                             value: PROJECT_SLUG
+                        },
+                        {
+                            name: "REDIS_URL",
+                            value: process.env.REDIS_URL
                         }
                     ]
                 }
